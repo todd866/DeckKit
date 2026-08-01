@@ -1,0 +1,293 @@
+{
+  "meta": {
+    "docTitle": "Presentations as data",
+    "docSubtitle": "One JSON file, a web deck and a .pptx that cannot disagree",
+    "author": "DeckKit",
+    "assets": {}
+  },
+  "slides": [
+    {
+      "id": "title",
+      "layout": "title",
+      "eyebrow": "DeckKit",
+      "title": "Presentations\nas data",
+      "subtitle": "A talk about how this talk is built.",
+      "chips": [
+        { "text": "13 layouts", "accent": "teal" },
+        { "text": "Web deck + real .pptx", "accent": "gold" }
+      ],
+      "thesis": "A slide should read from the thing it is about. When it does, you can test it, and a stale number fails the build instead of being presented.",
+      "author": "Open source, MIT.\nEvery number on these slides is about this repository.",
+      "footer": "decks/example.json",
+      "page": ""
+    },
+    {
+      "id": "hook",
+      "layout": "hook",
+      "eyebrow": "The idea",
+      "heading": "Two outputs, one source",
+      "subhead": "The deck you present in the browser and the file you email are built from the same JSON.",
+      "statLeft": { "value": "1", "label": "file you edit" },
+      "statRight": { "value": "0", "label": "copies of a number to keep in sync" },
+      "bottomLine": "Most slide rot is a copy that drifted. Remove the copy and the class of bug goes with it.",
+      "footer": "decks/example.json · src/deck/Deck.tsx · export/build_pptx.py"
+    },
+    {
+      "id": "pipeline",
+      "layout": "timeline",
+      "eyebrow": "How it works",
+      "heading": "From a text file to a room",
+      "subhead": "Click a stop for what happens there.",
+      "barValue": "5 steps",
+      "barLabel": "and only the first one is writing",
+      "stops": [
+        {
+          "label": "Write\nJSON",
+          "accent": "red",
+          "more": "A slide is an object with a `layout` and the fields that layout needs. There is no slide editor and no drag handles, which is the point: the diff of a deck is readable, and two people can edit different slides without fighting over a binary."
+        },
+        {
+          "label": "Render in\nthe browser",
+          "accent": "teal",
+          "deck": [
+            {
+              "title": "The stage is fixed at 16:9",
+              "body": "Every size on a slide is expressed in container units against that stage, so the deck is identical on a laptop, a projector and a phone. One layout, scaled — not a responsive redesign that surprises you in the room."
+            },
+            {
+              "title": "Detail hides behind a click",
+              "body": "Rows, panels, metrics and timeline stops can carry a `more` field. The slide stays sparse; the backing detail is one click away when somebody asks.\n\nThis panel is a sub-deck: a small slide show inside a slide, for the question you can answer in three beats rather than one."
+            },
+            {
+              "title": "The appendix is off the count",
+              "body": "Mark a slide `appendix: true` and it leaves the main sequence. Press M to jump there, Escape to come back where you were. The counter still reads ten slides when twenty exist."
+            }
+          ]
+        },
+        {
+          "label": "Test the\ndeck",
+          "accent": "gold",
+          "more": "`npm test` reads the layouts file, finds every layout the renderer implements, and checks that every slide in every deck asks for one that exists. The same test checks the Python exporter implements it too.\n\nThe useful version of this test is the one you write for your own content: assert that each number on a slide appears in the results file it claims to come from."
+        },
+        {
+          "label": "Export\n.pptx",
+          "accent": "ink",
+          "more": "`python export/build_pptx.py` writes a real PowerPoint file — native shapes and text boxes, not screenshots. It is the fallback for the venue that will not let you plug in a laptop, and the artefact for the person who asks you to email the slides."
+        },
+        {
+          "label": "Present",
+          "accent": "teal",
+          "more": "Arrows, space, Home and End to move. F for fullscreen. M for the appendix. The deck is a web page, so it can embed a live tool, and it updates when you deploy rather than when you remember to re-export."
+        }
+      ],
+      "bottomLine": "The only handwritten step is the first one.",
+      "footer": "npm run dev · npm test · python export/build_pptx.py"
+    },
+    {
+      "id": "layouts",
+      "layout": "table",
+      "eyebrow": "The kit",
+      "heading": "Thirteen layouts",
+      "subhead": "Each expects its own fields. Click a row for the fields it wants.",
+      "rows": [
+        {
+          "label": "Opening and closing",
+          "detail": "title, close",
+          "accent": "red",
+          "more": "`title` takes eyebrow, title, subtitle, chips, thesis and author. `close` takes heading, sub and acknowledgements.\n\nBoth put an accent panel over an optional photograph. Set meta.assets.titlePhoto and closePhoto to switch the photograph on; leave them out and the panel fills the slide, which is plainer and perfectly presentable."
+        },
+        {
+          "label": "Making a point",
+          "detail": "hook, timeline, takeaways",
+          "accent": "teal",
+          "more": "`hook` is two large numbers side by side, for the slide that has to land in four seconds.\n\n`timeline` is a labelled bar and a row of stops, each of which can open a detail card or a whole sub-deck.\n\n`takeaways` is three numbered cards, for the last slide before questions."
+        },
+        {
+          "label": "Comparing things",
+          "detail": "two-card, two-panel, metric-grid, table",
+          "accent": "gold",
+          "more": "`two-card` and `two-panel` are the same shape with different weight: cards sit on white with an accent strip, panels are filled with the accent's tint.\n\n`metric-grid` is four numbered tiles. `table` is a list of labelled rows. Both accept a `more` field per item."
+        },
+        {
+          "label": "Showing evidence",
+          "detail": "figure, equation",
+          "accent": "ink",
+          "more": "`figure` takes a path under public/, so the browser and the exporter read the same file. Point it at something a script writes and the slide cannot drift from the analysis.\n\n`equation` renders a formula with ^{superscripts}, beside operating points and a plain-language note on how to read it."
+        },
+        {
+          "label": "Live and hidden",
+          "detail": "embed, qa-backup",
+          "accent": "gray",
+          "more": "`embed` runs a real page inside the slide, with a poster image behind it so a failed load degrades to a screenshot instead of a blank box.\n\n`qa-backup` is a two-card slide you mark `appendix: true`, so it waits off the main sequence until someone asks."
+        }
+      ],
+      "bottomLine": "Adding a layout is a `case` in one file and a function in another.",
+      "footer": "src/deck/slideLayouts.tsx · export/build_pptx.py"
+    },
+    {
+      "id": "why",
+      "layout": "two-panel",
+      "eyebrow": "The argument",
+      "heading": "Why not just use PowerPoint",
+      "subhead": "Click either panel for the longer version.",
+      "panels": [
+        {
+          "title": "What a slide file loses",
+          "body": "A figure exported into a slide stops being connected to the analysis that produced it. Nothing checks it again.\n\nThe number in the deck and the number in the results file are now two facts, and one of them will quietly go out of date.",
+          "accent": "red",
+          "more": "This is not a hypothetical. The usual sequence is: run the analysis, paste the chart, fix a bug in the analysis, forget the chart. The deck keeps presenting the old answer, confidently, in a nice font.\n\nA deck that reads from your content sources can be tested. Assert that every number on a slide appears in the results file it claims to come from, and a stale figure fails the build instead of being presented to a room."
+        },
+        {
+          "title": "What you give up",
+          "body": "Transitions, animations, and dragging a box two pixels left because it looks better there.\n\nYou also give up handing the file to a colleague who does not write code and asking them to fix a typo.",
+          "accent": "teal",
+          "more": "These are real costs and worth being honest about. If your deck is mostly pictures arranged by eye, a slide editor is the right tool and this is overhead with extra steps.\n\nThe trade pays when the slides carry numbers that come from somewhere, when the deck outlives one talk, or when you will give a version of it again in six months and want to know what changed."
+        }
+      ],
+      "bottomLine": "Use this when the slides make claims. Use a slide editor when they make an impression.",
+      "footer": "README.md"
+    },
+    {
+      "id": "properties",
+      "layout": "metric-grid",
+      "eyebrow": "What you get",
+      "heading": "Four properties a slide file does not have",
+      "metrics": [
+        {
+          "n": "1",
+          "name": "Diffable",
+          "detail": "Review a deck the way you review code.",
+          "accent": "red",
+          "more": "`git diff` on a deck shows you the sentence that changed. On a .pptx it shows you that a binary changed. Line-by-line review of a talk turns out to be as useful as line-by-line review of a function."
+        },
+        {
+          "n": "2",
+          "name": "Testable",
+          "detail": "A number that moved can fail a build.",
+          "accent": "teal",
+          "more": "Because the deck is data, a test can read it. The layout test here is the boring version. The valuable one is content-specific: read the results file, read the deck, assert every claimed number appears in both."
+        },
+        {
+          "n": "3",
+          "name": "Reviewable by machine",
+          "detail": "An agent can edit slide seven without opening slide one.",
+          "accent": "gold",
+          "more": "A coding agent can revise a deck the way it revises source: read the JSON, change the field, run the test. It cannot do that with a binary, and it should not be doing it by driving a GUI."
+        },
+        {
+          "n": "4",
+          "name": "Two-target",
+          "detail": "The web deck and the .pptx stay in step.",
+          "accent": "ink",
+          "more": "Both renderers read the same file. They can look different — the web deck embeds a live tool, the .pptx shows a poster of it — but they cannot say different things, because there is only one place the words are written."
+        }
+      ],
+      "bottomLine": "None of these are features of the renderer. They are consequences of the deck being a file.",
+      "footer": "tests/layouts.test.mjs"
+    },
+    {
+      "id": "sizing",
+      "layout": "equation",
+      "eyebrow": "One detail worth stealing",
+      "heading": "How the slide scales",
+      "subhead": "Everything on a slide is sized against the stage, not the screen.",
+      "equationTitle": "The stage",
+      "equation": "width = min(100vw, 177.78vh)\naspect-ratio = 16 / 9\ncontainer-type: size\n\nheading  = 3.4cqw\nbody     = 1.38cqw\nmargin   = 4.2cqw",
+      "equationMore": "`cqw` is one per cent of the container's width — here, the slide itself. Because every size is a fraction of the stage, and the stage is locked to 16:9 inside whatever space it has, the deck renders identically at 1280 wide, at 3840 wide, and on a phone.\n\n177.78vh is 16/9 expressed in viewport height, so the stage takes the largest 16:9 rectangle that fits. The `min()` picks whichever constraint bites first: width on a wide screen, height on a tall one.\n\nThis is the whole trick. There is no breakpoint, no mobile layout, and nothing that can look right on your laptop and wrong on the projector.",
+      "thresholds": [
+        { "value": "16:9", "label": "the only aspect ratio the stage has", "accent": "teal" },
+        {
+          "value": "4.2cqw",
+          "label": "the margin every slide shares",
+          "accent": "gold",
+          "more": "Every layout starts from the same padding, which is why slides in different layouts still line up when you page through them. If you change one number in the palette, change this one last."
+        }
+      ],
+      "readItTitle": "How to read it",
+      "readIt": "Size in cqw and the deck is resolution-independent by construction. Size in pixels and you are hand-tuning it again the first time you present somewhere new.",
+      "bottomLine": "One layout, scaled. Not a responsive redesign that surprises you in the room.",
+      "footer": "src/deck/Deck.tsx, the CSS export"
+    },
+    {
+      "id": "figure",
+      "layout": "figure",
+      "eyebrow": "Generated, not pasted",
+      "heading": "Words per slide, in this deck",
+      "subhead": "Drawn by a script that reads the deck file, into public/figures/. Edit a slide, re-run it, and the chart is right.",
+      "image": "/figures/words-per-slide.png",
+      "bottomLine": "This is the point of the kit, on one slide: the chart is downstream of the thing it describes.",
+      "bottomLineAccent": "teal",
+      "footer": "python export/make_figure.py"
+    },
+    {
+      "id": "embed",
+      "layout": "embed",
+      "eyebrow": "Live on the slide",
+      "heading": "A working tool, not a screenshot of one",
+      "subhead": "This is a real page running inside the slide. Move the slider.",
+      "src": "/embed/contrast.html",
+      "poster": "/figures/embed-poster.png",
+      "bottomLine": "In the .pptx export this slide becomes the poster image, because a file you email cannot run anything.",
+      "footer": "public/embed/contrast.html"
+    },
+    {
+      "id": "takeaways",
+      "layout": "takeaways",
+      "eyebrow": "In short",
+      "heading": "Three things to take away",
+      "items": [
+        {
+          "n": "1",
+          "title": "Put the deck in the repo",
+          "body": "Beside the analysis it presents, in a format your tools can read.",
+          "accent": "red"
+        },
+        {
+          "n": "2",
+          "title": "Test the claims",
+          "body": "Any number on a slide should be checkable against the file it came from.",
+          "accent": "teal"
+        },
+        {
+          "n": "3",
+          "title": "Keep the fallback",
+          "body": "Export a real .pptx. Venues fail, laptops fail, and a poster beats a blank box.",
+          "accent": "gold"
+        }
+      ],
+      "bottomLine": "None of this needs this repository. It needs the deck to be a file you can read.",
+      "footer": "README.md"
+    },
+    {
+      "id": "close",
+      "layout": "close",
+      "heading": "Questions",
+      "sub": "Fork it, replace the palette, delete the layouts you do not use.",
+      "acknowledgementsTitle": "About this example",
+      "acknowledgements": "Every claim on these slides is about this repository and checkable inside it.\n\nExtracted from a research talk. The research is not here; the machinery is.\n\nMIT licensed.",
+      "footer": "github.com"
+    },
+    {
+      "id": "qa-fonts",
+      "layout": "qa-backup",
+      "appendix": true,
+      "eyebrow": "Appendix",
+      "heading": "The two questions people ask",
+      "subhead": "Reached with M, left with Escape. Never in the main count.",
+      "cards": [
+        {
+          "title": "Why not reveal.js?",
+          "body": "Because reveal.js is a framework for slides, and this is a renderer for one house style: 870 lines you are meant to read and change.\n\nIf you want plugins, speaker view and a market of themes, use reveal.js. If you want to open one file, understand all of it, and make it yours, use this.",
+          "accent": "teal"
+        },
+        {
+          "title": "What about animations?",
+          "body": "There is one: content fades up in sequence when a slide arrives. That is deliberate.\n\nBuild-by-build reveals are usually a way of managing a slide that has too much on it. The cheaper fix is the `more` field, which keeps the slide sparse and puts the detail one click away.",
+          "accent": "gold"
+        }
+      ],
+      "bottomLine": "An appendix slide is a normal slide with appendix: true.",
+      "footer": "decks/example.json"
+    }
+  ]
+}

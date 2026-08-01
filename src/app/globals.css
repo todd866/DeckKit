@@ -1,0 +1,3 @@
+/* The deck ships its own styles from Deck.tsx, so this file only has to get out of the way. */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; background: #0c1220; }
