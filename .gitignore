@@ -8,3 +8,6 @@ next-env.d.ts
 __pycache__/
 .DS_Store
 .env*
+
+# a deck you are previewing but cannot publish
+decks/*.local.json
