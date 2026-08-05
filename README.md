@@ -50,6 +50,7 @@ your slides make claims. Use a slide editor when they make an impression.
 | Path | |
 |---|---|
 | `decks/example.json` | the deck. One file, the only thing most edits touch |
+| `src/deck/activeDeck.ts` | the one place the deck file is named; `page.tsx` and `layout.tsx` both read it |
 | `src/deck/deckTypes.ts` | slide/deck types and the palette. No React, so build scripts can import it |
 | `src/deck/slideLayouts.tsx` | every layout, one `case` each |
 | `src/deck/Deck.tsx` | the shell: paging, keyboard, fullscreen, overlays, and the CSS |

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import deck from "../../decks/example.json";
+import deck from "../deck/activeDeck";
 
 export const metadata: Metadata = {
   title: deck.meta.docTitle,

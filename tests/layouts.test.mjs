@@ -79,6 +79,20 @@ for (const [file, deck] of decks) {
       "Update the slide, or delete this test if you no longer make the claim.");
   });
 
+  // `depthOf` is only read when the slide is also hidden, and a typo in it fails silently:
+  // M falls back to the flat appendix, so you get the wrong backup material in front of a
+  // room rather than an error. Both halves are worth asserting.
+  test(`${file}: depth slides point at a real surface slide`, () => {
+    const surface = new Set(deck.slides.filter((s) => !s.appendix).map((s) => s.id));
+    for (const s of deck.slides) {
+      if (!s.depthOf) continue;
+      assert.ok(s.appendix,
+        `slide ${s.id} has depthOf but not appendix:true, so it sits in the main sequence`);
+      assert.ok(surface.has(s.depthOf),
+        `slide ${s.id} has depthOf "${s.depthOf}", which is not a surface slide in this deck`);
+    }
+  });
+
   test(`${file}: two-column layouts get exactly two items`, () => {
     const pairs = { "two-card": "cards", "qa-backup": "cards", "two-panel": "panels" };
     for (const s of deck.slides) {

@@ -239,6 +239,21 @@ def row_widths(n, total=CW, gap=Inches(0.2)):
 
 
 # ---- per-layout renderers ---------------------------------------------------
+def pair(d, key):
+    """Two-column layouts take exactly two items; say which slide is wrong.
+
+    `c0, c1 = d["cards"]` raises "too many values to unpack", which names neither the slide
+    nor the field, and you find out on the morning of the talk rather than in `npm test`.
+    """
+    items = d.get(key) or []
+    if len(items) != 2:
+        raise ValueError(
+            f"slide {d.get('id')!r} is a {d.get('layout')!r}, so {key!r} must hold exactly "
+            f"two items; it has {len(items)}"
+        )
+    return items
+
+
 # Each takes (prs, d) where d is one slide object from the deck file.
 
 def render_title(prs, d):
@@ -312,7 +327,7 @@ def render_timeline(prs, d):
 def render_two_card(prs, d):
     s = base(prs, d)
     heading(s, d)
-    c0, c1 = d["cards"]
+    c0, c1 = pair(d, "cards")
     card(s, ML, Inches(2.7), COL_L, Inches(2.9), _accent(c0["accent"]), c0["title"], c0["body"])
     card(s, RIGHT, Inches(2.7), COL_R, Inches(2.9), _accent(c1["accent"]), c1["title"], c1["body"])
     bottom_line(s, d)
@@ -321,7 +336,7 @@ def render_two_card(prs, d):
 def render_qa_backup(prs, d):
     s = base(prs, d)
     heading(s, d)
-    c0, c1 = d["cards"]
+    c0, c1 = pair(d, "cards")
     card(s, ML, Inches(2.6), COL_L, Inches(3.2), _accent(c0["accent"]), c0["title"], c0["body"])
     card(s, RIGHT, Inches(2.6), COL_R, Inches(3.2), _accent(c1["accent"]), c1["title"], c1["body"])
     bottom_line(s, d)
@@ -330,7 +345,7 @@ def render_qa_backup(prs, d):
 def render_two_panel(prs, d):
     s = base(prs, d)
     heading(s, d)
-    p0, p1 = d["panels"]
+    p0, p1 = pair(d, "panels")
     for p, x, w in ((p0, ML, COL_L), (p1, RIGHT, COL_R)):
         rect(s, x, Inches(2.75), w, Inches(2.5), fill=_tint(p["accent"]))
         text(s, p["title"], x + Inches(0.25), Inches(2.95), w - Inches(0.5),
