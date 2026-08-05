@@ -60,7 +60,7 @@ your slides make claims. Use a slide editor when they make an impression.
 | `public/embed/contrast.html` | the live page the `embed` slide runs |
 | `tests/layouts.test.mjs` | checks every slide against both renderers |
 
-The renderer is 870 lines. It is meant to be read and changed, not configured.
+The renderer is 899 lines. It is meant to be read and changed, not configured.
 
 ## Writing a deck
 
@@ -95,9 +95,15 @@ Three fields do most of the work:
   slide show inside the slide, for a question that needs three beats rather than one.
 - **`appendix: true`** — takes the slide out of the main sequence and the page count. `M`
   jumps to the appendix, `Escape` returns you to where you were.
+- **`depthOf`** — on an appendix slide, the `id` of the surface slide it belongs to. `M` then
+  keys off the slide you are on and enters only that slide's depth, and the arrows page within
+  it. Appendix slides without a `depthOf` stay one flat group, which is what `M` falls back to
+  when the current slide has no depth of its own. Use `more` and `deck` when a click is fine
+  and `depthOf` when it is not — on a call you want the backup material under one key, not
+  somewhere in a shared appendix you have to page through while someone waits.
 
 **Keys:** arrows, space, `PageUp`/`PageDown`, `Home`, `End` to move. `F` fullscreen.
-`M` appendix, `Escape` back.
+`M` depth or appendix, `Escape` back.
 
 ### Layouts
 

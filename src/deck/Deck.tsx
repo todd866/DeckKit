@@ -42,30 +42,52 @@ export default function Deck({ deck }: { deck: DeckData }) {
   const returnRef = useRef(0);
   const assets = deck.meta.assets ?? {};
 
-  // two navigation groups: the linear talk, and a hidden appendix you can jump to when
-  // someone asks the awkward question. The appendix is not in the page count, so the talk
-  // still reads as ten slides even when twenty exist.
+  // Navigation groups: the linear talk, and hidden material you can jump to when someone asks
+  // the awkward question. Hidden slides are not in the page count, so the talk still reads as
+  // ten slides even when twenty exist.
+  //
+  // A hidden slide may name a `depthOf` — the id of the surface slide it belongs to. Then M
+  // keys off the CURRENT slide and enters only that slide's depth, and the arrows page within
+  // it, so the awkward question is one key away rather than somewhere in a shared appendix.
+  // Hidden slides with no `depthOf` form the flat appendix, which is both the fallback for a
+  // slide with no depth of its own and the whole of the old behaviour.
   const mainIdx = useMemo(() => deck.slides.map((s, k) => (s.appendix ? -1 : k)).filter((k) => k >= 0), [deck.slides]);
-  const apxIdx = useMemo(() => deck.slides.map((s, k) => (s.appendix ? k : -1)).filter((k) => k >= 0), [deck.slides]);
+  const apxIdx = useMemo(() => deck.slides.map((s, k) => (s.appendix && !s.depthOf ? k : -1)).filter((k) => k >= 0), [deck.slides]);
+  const depthIdx = useCallback(
+    (of: string) => deck.slides.map((s, k) => (s.appendix && s.depthOf === of ? k : -1)).filter((k) => k >= 0),
+    [deck.slides],
+  );
+  const groupOf = useCallback((v: number) => {
+    const s = deck.slides[v];
+    if (!s?.appendix) return mainIdx;
+    return s.depthOf ? depthIdx(s.depthOf) : apxIdx;
+  }, [deck.slides, mainIdx, apxIdx, depthIdx]);
+
   const inApx = !!deck.slides[i]?.appendix;
-  const group = inApx ? apxIdx : mainIdx;
+  const group = groupOf(i);
   const pos = Math.max(0, group.indexOf(i));
 
   const go = useCallback((d: number) => {
     setDetail(null);
     setSubDeck(null);
     setI((v) => {
-      const g = deck.slides[v]?.appendix ? apxIdx : mainIdx;
+      const g = groupOf(v);
       const p = Math.max(0, g.indexOf(v));
       return g[Math.max(0, Math.min(g.length - 1, p + d))];
     });
-  }, [deck.slides, apxIdx, mainIdx]);
+  }, [groupOf]);
 
   const enterApx = useCallback(() => {
-    if (!apxIdx.length) return;
     setDetail(null);
-    setI((v) => { if (deck.slides[v]?.appendix) return v; returnRef.current = v; return apxIdx[0]; });
-  }, [apxIdx, deck.slides]);
+    setI((v) => {
+      if (deck.slides[v]?.appendix) return v;
+      const own = depthIdx(String(deck.slides[v]?.id ?? ""));
+      const target = own.length ? own : apxIdx;
+      if (!target.length) return v;
+      returnRef.current = v;
+      return target[0];
+    });
+  }, [apxIdx, depthIdx, deck.slides]);
 
   const exitApx = useCallback(() => setI(returnRef.current), []);
 
@@ -99,8 +121,8 @@ export default function Deck({ deck }: { deck: DeckData }) {
       if (e.key === "m" || e.key === "M") { e.preventDefault(); enterApx(); return; }
       if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); go(1); }
       else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(-1); }
-      else if (e.key === "Home") setI((v) => (deck.slides[v]?.appendix ? apxIdx : mainIdx)[0]);
-      else if (e.key === "End") setI((v) => { const g = deck.slides[v]?.appendix ? apxIdx : mainIdx; return g[g.length - 1]; });
+      else if (e.key === "Home") setI((v) => groupOf(v)[0]);
+      else if (e.key === "End") setI((v) => { const g = groupOf(v); return g[g.length - 1]; });
       else if (e.key === "f" || e.key === "F") { e.preventDefault(); toggleFullscreen(); }
     };
     const onFsChange = () => setIsFs(!!fullscreenElement());
@@ -112,7 +134,7 @@ export default function Deck({ deck }: { deck: DeckData }) {
       document.removeEventListener("fullscreenchange", onFsChange);
       document.removeEventListener("webkitfullscreenchange", onFsChange);
     };
-  }, [go, enterApx, exitApx, detail, subDeck, inApx, apxIdx, mainIdx, deck.slides]);
+  }, [go, enterApx, exitApx, detail, subDeck, inApx, groupOf]);
 
   // warm the cache for the chrome slides' decoration so it never pops in mid-talk
   useEffect(() => {
@@ -131,7 +153,7 @@ export default function Deck({ deck }: { deck: DeckData }) {
       </div>
       <div className="nav">
         <button aria-label="Previous" onClick={() => go(-1)} disabled={pos === 0}>‹</button>
-        <span className="counter">{inApx ? `Appendix ${pos + 1} / ${apxIdx.length}` : `${pos + 1} / ${mainIdx.length}`}</span>
+        <span className="counter">{inApx ? `${deck.slides[i]?.depthOf ? "Depth" : "Appendix"} ${pos + 1} / ${group.length}` : `${pos + 1} / ${mainIdx.length}`}</span>
         <button aria-label="Next" onClick={() => go(1)} disabled={pos === group.length - 1}>›</button>
         <button
           className="fsbtn"

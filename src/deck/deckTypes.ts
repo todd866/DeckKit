@@ -13,6 +13,13 @@ export interface Slide {
   layout: string;
   /** true = lives in the hidden appendix group, reached with M, left with Escape */
   appendix?: boolean;
+  /**
+   * The id of the surface slide this hidden slide belongs to. Set it (with `appendix`) and M
+   * from that slide enters only its own depth; the arrows then page within that depth alone.
+   * Hidden slides without a `depthOf` form the flat appendix, which is what M falls back to
+   * when the current slide has no depth of its own.
+   */
+  depthOf?: string;
   [key: string]: unknown;
 }
 
