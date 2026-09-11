@@ -344,6 +344,9 @@ export const CSS = `
 .l-embed { flex: 1; margin-top: 2.6cqh; min-height: 0; position: relative; }
 .embed-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; border: 1px solid ${RULE}; border-radius: .6cqw; z-index: 0; }
 .embed-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 1px solid ${RULE}; background: #fff; border-radius: .6cqw; z-index: 1; }
+/* Loading, blocked, or broken: the poster behind it stands in, and the frame takes over
+   the moment it loads. Hidden rather than unmounted, so a slow page is not given up on. */
+.embed-frame.embed-waiting { opacity: 0; pointer-events: none; }
 
 /* close — accent panel over an optional photo */
 .c-panel { position: absolute; inset: 0 auto 0 0; width: 53%; background: ${ACCENT.red}; color: #fff; padding: 6cqh 3.6cqw 3.6cqh; box-sizing: border-box; display: flex; flex-direction: column; }

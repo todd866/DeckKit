@@ -64,7 +64,7 @@ your slides make claims. Use a slide editor when they make an impression.
 | `public/embed/contrast.html` | the live page the `embed` slide runs |
 | `tests/layouts.test.mjs` | checks the deck's claims, and that both renderers know every layout a slide asks for |
 
-The renderer is 923 lines. It is meant to be read and changed, not configured. That number
+The renderer is 924 lines. It is meant to be read and changed, not configured. That number
 is checked by `npm test`, here and on the slide that says it, which is the whole argument in
 one line: a claim in prose goes stale as quietly as one on a slide.
 

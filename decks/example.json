@@ -277,7 +277,7 @@
       "cards": [
         {
           "title": "Why not reveal.js?",
-          "body": "Because reveal.js is a framework for slides, and this is a renderer for one house style: 923 lines you are meant to read and change.\n\nIf you want plugins, speaker view and a market of themes, use reveal.js. If you want to open one file, understand all of it, and make it yours, use this.",
+          "body": "Because reveal.js is a framework for slides, and this is a renderer for one house style: 924 lines you are meant to read and change.\n\nIf you want plugins, speaker view and a market of themes, use reveal.js. If you want to open one file, understand all of it, and make it yours, use this.",
           "accent": "teal"
         },
         {

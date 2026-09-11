@@ -8,7 +8,7 @@
 // Adding a layout means adding a `case` here and a renderer in export/build_pptx.py; the
 // test fails if a deck uses one that either side does not have.
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { type Slide, type DeckAssets, ACCENT, TINT, accent, tint, accentText } from "./deckTypes";
 
 // split "a\n\nb\nc" into paragraphs (\n\n) with soft breaks (\n)
@@ -60,13 +60,11 @@ function Foot({ s }: { s: Slide }) {
 // slow or blocked load — venue wifi, a laptop that never joined the network — degrades to a
 // screenshot rather than a blank box. Nothing on stage should ever be empty.
 function EmbedBody({ s }: { s: Slide }) {
-  const [showPoster, setShowPoster] = useState(!s.src);
-  const loadedRef = useRef(false);
-  useEffect(() => {
-    if (!s.src) return;
-    const t = setTimeout(() => { if (!loadedRef.current) setShowPoster(true); }, 4500);
-    return () => clearTimeout(t);
-  }, [s.src]);
+  // The poster shows until the frame has actually loaded, and the frame is never
+  // unmounted: a page that is merely slow still arrives, where a timeout that removed
+  // the iframe left the poster up for the rest of the talk with no way back. With no
+  // poster there is nothing to wait behind, so the frame is shown from the start.
+  const [frameReady, setFrameReady] = useState(!s.poster);
   return (
     <>
       <Head s={s} />
@@ -74,13 +72,13 @@ function EmbedBody({ s }: { s: Slide }) {
         {s.poster ? (
           <img className="embed-poster" src={String(s.poster)} alt={String(s.heading ?? "")} />
         ) : null}
-        {!showPoster ? (
+        {s.src ? (
           <iframe
-            className="embed-frame"
+            className={"embed-frame" + (frameReady ? "" : " embed-waiting")}
             src={String(s.src)}
             title={String(s.heading ?? "Embedded page")}
-            onLoad={() => { loadedRef.current = true; }}
-            onError={() => setShowPoster(true)}
+            onLoad={() => setFrameReady(true)}
+            onError={() => setFrameReady(false)}
           />
         ) : null}
       </div>
