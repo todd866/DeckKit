@@ -11,3 +11,7 @@ __pycache__/
 
 # a deck you are previewing but cannot publish
 decks/*.local.json
+
+# written by `next dev`, not part of the published repo
+AGENTS.md
+CLAUDE.md

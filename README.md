@@ -4,7 +4,8 @@
 
 Presentations as data. You write a JSON file; it renders as a keyboard-driven web deck in
 the browser, and exports to a real `.pptx` — native shapes and text, not screenshots — and
-to PDF. Both outputs read the same file, so they cannot disagree about what the talk says.
+to PDF. Both outputs read the same file, so they cannot contradict each other about what the
+talk says - though the `.pptx` carries less of it, which is [spelled out below](#what-the-pptx-does-not-carry).
 
 ![The title slide](docs/deck-title.png)
 
@@ -14,7 +15,7 @@ is not here. The machinery is, with an example deck that explains itself.
 
 ```bash
 npm install && npm run dev          # the deck at localhost:3000  (Node 20.9+)
-npm test                            # check every slide against both renderers
+npm test                            # check the deck's claims and both renderers' layouts
 ./export/build.sh                   # figures -> build/example.pptx -> build/example.pdf
 ```
 
@@ -61,7 +62,7 @@ your slides make claims. Use a slide editor when they make an impression.
 | `export/build.sh` | figures → `.pptx` → PDF, in one command |
 | `export/make_figure.py` | draws the chart on the `figure` slide, from the deck itself |
 | `public/embed/contrast.html` | the live page the `embed` slide runs |
-| `tests/layouts.test.mjs` | checks every slide against both renderers |
+| `tests/layouts.test.mjs` | checks the deck's claims, and that both renderers know every layout a slide asks for |
 
 The renderer is 923 lines. It is meant to be read and changed, not configured. That number
 is checked by `npm test`, here and on the slide that says it, which is the whole argument in
@@ -158,6 +159,21 @@ export a PDF from there.
 `build_pptx.py` owns where the boxes go on a 13.333 × 7.5in stage; the deck file owns the
 words. The two renderers lay the same talk out differently — the web deck runs a live tool
 where the `.pptx` shows a still — but neither can change what it says.
+
+### What the `.pptx` does not carry
+
+The exporter renders what is on the slide. Three things live only in the browser, and it is
+better to know that before you email the file as if it were the talk:
+
+- **`more` and `deck` detail.** The text behind a click is not exported. On a deck that
+  keeps its answers there — as the example one does — the `.pptx` is the surface of the
+  talk, not the talk. Put anything the file has to survive without you on the slide, or in
+  an `appendix` slide.
+- **`meta.assets`.** Title and closing photographs and logos are web-only; the exported
+  title and closing slides are the plain accent design.
+- **The appendix is linear.** `appendix: true` hides a slide from the web deck's sequence
+  and page count; in the `.pptx` it is simply the next slide, which is what a backup slide
+  at the end of a file should be.
 
 ## Making it yours
 

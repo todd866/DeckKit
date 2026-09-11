@@ -1,6 +1,6 @@
 """Draw the figure that appears on the `figure` slide, from the deck file itself.
 
-    python export/make_figure.py
+    python export/make_figure.py [decks/some-deck.json]
 
 Writes two PNGs into public/, where both the browser renderer and build_pptx.py read
 them:
@@ -21,12 +21,13 @@ Depends only on Pillow.
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
-DECK = ROOT / "decks/example.json"
+DEFAULT_DECK = ROOT / "decks/example.json"
 FIGURES = ROOT / "public/figures"
 
 PAPER = "#F5F1E7"
@@ -180,8 +181,14 @@ def embed_poster(out):
     return out
 
 
-def main():
-    with open(DECK, encoding="utf-8") as f:
+def main(argv=None):
+    # build.sh passes the deck it is about to export. Without this the chart was always
+    # drawn from the example deck, so `./export/build.sh decks/mine.json` produced a .pptx
+    # of your talk carrying a figure about somebody else's - which is precisely the drift
+    # this script exists to make impossible.
+    argv = sys.argv if argv is None else argv
+    deck_path = Path(argv[1]) if len(argv) > 1 else DEFAULT_DECK
+    with open(deck_path, encoding="utf-8") as f:
         deck = json.load(f)
     a = bar_chart(words_per_slide(deck), FIGURES / "words-per-slide.png")
     b = embed_poster(FIGURES / "embed-poster.png")

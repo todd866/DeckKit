@@ -18,7 +18,7 @@ STEM="$(basename "${DECK%.*}")"
 if [ -x .venv/bin/python ]; then PY=.venv/bin/python; else PY="$(command -v python3 || command -v python)"; fi
 if [ -z "${PY:-}" ]; then echo "no python found; see export/requirements.txt" >&2; exit 1; fi
 
-"$PY" export/make_figure.py
+"$PY" export/make_figure.py "$DECK"
 "$PY" export/build_pptx.py "$DECK" "build/$STEM.pptx"
 
 # PDF is a LibreOffice conversion. It is genuinely optional — the .pptx is the artefact —
