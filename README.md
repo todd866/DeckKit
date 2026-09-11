@@ -2,14 +2,23 @@
 
 [![check](https://github.com/todd866/DeckKit/actions/workflows/check.yml/badge.svg)](https://github.com/todd866/DeckKit/actions/workflows/check.yml)
 
-Presentations as data. You write a JSON file; it renders as a keyboard-driven web deck in
-the browser, and exports to a real `.pptx` — native shapes and text, not screenshots — and
-to PDF. Both outputs read the same file, so they cannot contradict each other about what the
-talk says - though the `.pptx` carries less of it, which is [spelled out below](#what-the-pptx-does-not-carry).
+PowerPoint assumes a person with a mouse. Increasingly the thing drafting your slides is an
+AI agent, and an agent cannot drag a box two pixels left, cannot tell you what it changed,
+and will happily leave last month's number on slide nine.
+
+So the deck here is a text file. An agent rewrites slide seven without opening slide one.
+`git diff` shows you the sentence that changed. A number on a slide can be checked against
+the analysis it came from, and a stale one fails the build instead of going up on a screen
+in front of a room.
+
+The same file renders as a keyboard-driven web deck and exports to a real `.pptx` — native
+shapes and text, not screenshots — and to PDF. Neither output can contradict the other about
+what the talk says, though the `.pptx` carries less of it: see
+[what the `.pptx` does not carry](#what-the-pptx-does-not-carry).
 
 ![The title slide](docs/deck-title.png)
 
-Extracted from a research talk that had to work three ways: live in a lecture theatre, as a
+It came out of a research talk that had to work three ways: live in a lecture theatre, as a
 file a supervisor could open, and as a PDF an assessment system would accept. The research
 is not here. The machinery is, with an example deck that explains itself.
 
@@ -24,15 +33,14 @@ the format is to page through it with the JSON open beside you.
 
 ---
 
-## Why bother
+## Why a file beats a slide editor
 
-A figure exported into a slide file stops being connected to the analysis that produced it.
-Nothing checks it again. The number in the deck and the number in your results are now two
-facts, and one of them will quietly go out of date — usually the one you are about to show
-a room.
+Paste a figure into a slide and it stops being connected to the analysis that produced it.
+Nothing checks it again. The number in the deck and the number in your results are two facts
+now, and one of them will quietly go out of date — usually the one you are about to show a
+room.
 
-When the deck is a file your tools can read, that stops being a discipline problem and
-becomes a test:
+A file your tools can read turns that from a discipline problem into a test:
 
 ```js
 // tests/layouts.test.mjs — the version shipped here checks a line count.
@@ -41,12 +49,9 @@ assert.equal(Number(claimed), actual,
   `the deck says ${claimed}; it is ${actual}. Update the slide.`)
 ```
 
-A stale figure fails the build instead of being presented. You also get a readable `git
-diff` of a talk, and a coding agent that can revise slide seven without opening slide one.
-
-The trade is real and worth stating plainly. You give up transitions, dragging a box two
-pixels left, and handing the file to a colleague who does not write code. Use this when
-your slides make claims. Use a slide editor when they make an impression.
+The trade is real and worth stating plainly. You give up transitions, nudging a box by hand,
+and handing the file to a colleague who does not write code. Use this when your slides make
+claims. Use a slide editor when they make an impression.
 
 ## What is in here
 
@@ -111,6 +116,25 @@ Three fields do most of the work:
 **Keys:** arrows, space, `PageUp`/`PageDown`, `Home`, `End` to move. `F` fullscreen.
 `M` depth or appendix, `Escape` back.
 
+### Handing it to an agent
+
+Four things are worth putting in front of a coding agent, and they are all short enough to
+paste:
+
+1. **The deck is one file.** Name it — `decks/mine.json` — and say that slides are addressed
+   by `id`. An agent asked to fix slide seven edits one object, and you read the diff rather
+   than the deck.
+2. **The layouts are a closed set**, listed below and enumerated as `case` labels in
+   `src/deck/slideLayouts.tsx`. An agent that invents `layout: "two-column"` fails the test
+   instead of rendering an empty stage.
+3. **`npm test` is the contract.** It already checks that every slide asks for a layout both
+   renderers know, that ids are unique, and that the numbers claimed on a slide are still
+   true. Tell the agent to run it before it says it is finished.
+4. **Write the test that reads your results.** `tests/layouts.test.mjs` ships with a
+   demonstration: it recomputes a line count this repository claims about itself. Replace it
+   with one that reads whatever your talk is about. It is the only part an agent cannot write
+   for you, because only you know which numbers matter.
+
 ### Layouts
 
 `title` · `hook` · `timeline` · `two-card` · `two-panel` · `metric-grid` · `takeaways` ·
@@ -172,7 +196,7 @@ better to know that before you email the file as if it were the talk:
 - **`meta.assets`.** Title and closing photographs and logos are web-only; the exported
   title and closing slides are the plain accent design.
 - **The appendix is linear.** `appendix: true` hides a slide from the web deck's sequence
-  and page count; in the `.pptx` it is simply the next slide, which is what a backup slide
+  and page count; in the `.pptx` it is just the next slide, which is what a backup slide
   at the end of a file should be.
 
 ## Making it yours
