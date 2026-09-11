@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Presentations as data: one JSON file renders as a keyboard-driven web deck and exports to a real .pptx.",
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

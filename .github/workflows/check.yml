@@ -1,0 +1,30 @@
+# The claims in this repository are checked by `npm test`, so the check runs on every push.
+# The export is included because a deck that renders in the browser and throws on the way to
+# .pptx is the failure this project exists to prevent, and it only shows up when you run it.
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r export/requirements.txt
+      # No LibreOffice on the runner, so build.sh stops after the .pptx and says so.
+      - run: ./export/build.sh

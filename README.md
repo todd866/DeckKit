@@ -1,5 +1,7 @@
 # DeckKit
 
+[![check](https://github.com/todd866/DeckKit/actions/workflows/check.yml/badge.svg)](https://github.com/todd866/DeckKit/actions/workflows/check.yml)
+
 Presentations as data. You write a JSON file; it renders as a keyboard-driven web deck in
 the browser, and exports to a real `.pptx` — native shapes and text, not screenshots — and
 to PDF. Both outputs read the same file, so they cannot disagree about what the talk says.
@@ -11,7 +13,7 @@ file a supervisor could open, and as a PDF an assessment system would accept. Th
 is not here. The machinery is, with an example deck that explains itself.
 
 ```bash
-npm install && npm run dev          # the deck at localhost:3000
+npm install && npm run dev          # the deck at localhost:3000  (Node 20.9+)
 npm test                            # check every slide against both renderers
 ./export/build.sh                   # figures -> build/example.pptx -> build/example.pdf
 ```
@@ -61,7 +63,9 @@ your slides make claims. Use a slide editor when they make an impression.
 | `public/embed/contrast.html` | the live page the `embed` slide runs |
 | `tests/layouts.test.mjs` | checks every slide against both renderers |
 
-The renderer is 899 lines. It is meant to be read and changed, not configured.
+The renderer is 923 lines. It is meant to be read and changed, not configured. That number
+is checked by `npm test`, here and on the slide that says it, which is the whole argument in
+one line: a claim in prose goes stale as quietly as one on a slide.
 
 ## Writing a deck
 

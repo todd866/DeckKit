@@ -103,3 +103,31 @@ for (const [file, deck] of decks) {
     }
   });
 }
+
+// The README makes the same two claims the deck does, to a reader who will never run the
+// tests. A number in prose goes stale as quietly as one on a slide, so it is checked here
+// against the same sources rather than against the deck - agreeing with a stale slide is
+// not evidence of anything.
+test("the README's claims about this repository are still true", () => {
+  const readme = readFileSync(join(ROOT, "README.md"), "utf8");
+
+  const lines = readme.match(/renderer is (\d+) lines/);
+  if (lines) {
+    const actual = ["deckTypes.ts", "Deck.tsx", "slideLayouts.tsx"]
+      .map((f) => readFileSync(join(ROOT, "src/deck", f), "utf8").split("\n").length - 1)
+      .reduce((a, b) => a + b, 0);
+    assert.equal(Number(lines[1]), actual,
+      `README says the renderer is ${lines[1]} lines; it is ${actual}.`);
+  }
+
+  // The layout list in the README, as a set, against the renderer's own cases.
+  const listed = new Set([...readme.matchAll(/`([a-z-]+)`\s*·/g)].map((m) => m[1]));
+  if (listed.size) {
+    // The list ends without a separator, so add the last entry of that line.
+    const line = readme.split("\n").find((l) => l.includes("`title` ·")) ?? "";
+    const block = readme.slice(readme.indexOf(line)).split("\n\n")[0];
+    const all = new Set([...block.matchAll(/`([a-z-]+)`/g)].map((m) => m[1]));
+    assert.deepEqual([...all].sort(), [...webLayouts].sort(),
+      "the README's layout list and slideLayouts.tsx disagree about which layouts exist");
+  }
+});

@@ -240,6 +240,23 @@ export const CSS = `
 .l-title, .l-close { position: absolute; inset: 0; background-size: cover; background-position: center; }
 /* No photo set: fill the space beside the panel rather than leaving bare paper. */
 .l-title.no-photo, .l-close.no-photo { background: ${ACCENT.ink}; }
+/* With a photograph, the panel is a column beside the picture. With none, a 43% band of
+   flat ink is not a design, it is the hole where a photograph was going to be - so the
+   panel takes the whole stage and the content spreads across it instead. */
+.t-lead { display: contents; }
+.l-title.no-photo .t-panel, .l-close.no-photo .c-panel {
+  width: 100%; display: grid; grid-template-columns: 1.15fr .85fr;
+  grid-template-rows: 1fr auto; column-gap: 5cqw; padding: 6cqh 5cqw 4cqh;
+}
+/* The closing slide has no footer row to stand on, so it carries the clearance itself. */
+.l-close.no-photo .c-panel { padding-bottom: 9cqh; }
+.l-title.no-photo .t-lead, .l-close.no-photo .t-lead { display: block; align-self: end; padding-bottom: 7cqh; }
+.l-title.no-photo .thesis, .l-close.no-photo .thanks { align-self: end; margin-top: 0; margin-bottom: 7cqh; }
+.l-title.no-photo .t-foot, .l-close.no-photo .c-logo { grid-column: 1 / -1; margin-top: 4cqh; }
+/* The type can be larger once it owns the stage rather than a 57% column. */
+.l-title.no-photo .t-title { font-size: 5.2cqw; }
+.l-title.no-photo .t-sub { font-size: 1.5cqw; }
+.l-close.no-photo .close-h { font-size: 6cqw; }
 .t-panel { position: absolute; inset: 0 auto 0 0; width: 57%; background: ${ACCENT.red}; color: #fff; padding: 5.5cqh 3.6cqw 3.6cqh; box-sizing: border-box; display: flex; flex-direction: column; }
 .t-eyebrow { font-size: 1.05cqw; font-weight: 700; color: #fff; letter-spacing: .14em; text-transform: uppercase; opacity: .9; }
 .t-title { font-size: 3.9cqw; font-weight: 800; color: #fff; margin: 1.4cqh 0 0; line-height: 1.04; white-space: pre-line; }

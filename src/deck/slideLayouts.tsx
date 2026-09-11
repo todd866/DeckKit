@@ -100,16 +100,21 @@ export function renderBody(s: Slide, assets: DeckAssets = {}) {
           style={assets.titlePhoto ? { backgroundImage: `url(${assets.titlePhoto})` } : undefined}
         >
           <div className="t-panel">
-            <div className="t-eyebrow">{String(s.eyebrow ?? "")}</div>
-            <h1 className="t-title">{String(s.title)}</h1>
-            <p className="t-sub">{String(s.subtitle ?? "")}</p>
-            {chips.length ? (
-              <div className="t-chips">
-                {chips.map((c, i) => (
-                  <span key={i} className="chip">{c.text}</span>
-                ))}
-              </div>
-            ) : null}
+            {/* One wrapper so that with no photo the lead can sit in its own column.
+                `.t-lead { display: contents }` keeps the photo layout stacking exactly
+                as it did before this wrapper existed. */}
+            <div className="t-lead">
+              <div className="t-eyebrow">{String(s.eyebrow ?? "")}</div>
+              <h1 className="t-title">{String(s.title)}</h1>
+              <p className="t-sub">{String(s.subtitle ?? "")}</p>
+              {chips.length ? (
+                <div className="t-chips">
+                  {chips.map((c, i) => (
+                    <span key={i} className="chip">{c.text}</span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
             {s.thesis ? (
               <div className="thesis">
                 <div className="thesis-t">{String(s.thesisTitle ?? "Thesis")}</div>
@@ -361,8 +366,10 @@ export function renderBody(s: Slide, assets: DeckAssets = {}) {
           style={assets.closePhoto ? { backgroundImage: `url(${assets.closePhoto})` } : undefined}
         >
           <div className="c-panel">
-            <h1 className="close-h">{String(s.heading)}</h1>
-            {s.sub ? <p className="close-sub">{String(s.sub)}</p> : null}
+            <div className="t-lead">
+              <h1 className="close-h">{String(s.heading)}</h1>
+              {s.sub ? <p className="close-sub">{String(s.sub)}</p> : null}
+            </div>
             {s.acknowledgements ? (
               <div className="thanks">
                 <div className="thanks-t">{String(s.acknowledgementsTitle ?? "With thanks")}</div>
